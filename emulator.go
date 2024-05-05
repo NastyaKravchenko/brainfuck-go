@@ -2,17 +2,22 @@ package brainfuck
 
 import "fmt"
 
-func (e *Emulator) step() {
+func (e Emulator) execute() {
+	for e.ip < uint(len(e.app)) {
+		e.step()
+	}
+}
+
+func (e *Emulator) step() error {
 	switch command := e.app[e.ip]; command {
 	case '>':
 		if e.mp > MEM_MAX {
-			errmsg := fmt.Sprintf("(op >) memory pointer must be <= %d", MEM_MAX)
-			panic(errmsg)
+			return fmt.Errorf("(op >) memory pointer must be <= %d", MEM_MAX)
 		}
 		e.mp += 1
 	case '<':
 		if e.mp == 0 {
-			panic("(op <) memory pointer must be >= 0")
+			return fmt.Errorf("(op <) memory pointer must be >= 0")
 		}
 		e.mp -= 1
 	case '+':
@@ -25,7 +30,7 @@ func (e *Emulator) step() {
 		char := make([]byte, 1)
 		_, err := e.input.Read(char)
 		if err != nil {
-			panic(err)
+			return fmt.Errorf("error reading")
 		}
 		e.mem[e.mp] = char[0]
 	case '[':
@@ -37,6 +42,8 @@ func (e *Emulator) step() {
 			e.ip = e.jumps[e.ip]
 		}
 	default:
+		return fmt.Errorf("invalid token")
 	}
 	e.ip += 1
+	return nil
 }

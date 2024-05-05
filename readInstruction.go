@@ -1,8 +1,11 @@
 package brainfuck
 
-import "os"
+import (
+	"os"
+	"strings"
+)
 
-func OpenFile(filename string) Emulator {
+func readInstruction(filename string) Emulator {
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		panic(err)
@@ -32,4 +35,12 @@ func OpenFile(filename string) Emulator {
 	}
 
 	return e
+}
+
+func pop(a []uint) (uint, []uint) {
+	return a[len(a)-1], a[:len(a)-1]
+}
+
+func IsValidToken(t byte) bool {
+	return strings.Contains("+-><,[].,", string(t))
 }

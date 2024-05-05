@@ -14,6 +14,6 @@ func main() {
 		return
 	}
 
-	var emulator = OpenFile(*input)
+	var emulator = readInstruction(*input)
 	emulator.execute()
 }
